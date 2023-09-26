@@ -18,6 +18,7 @@ Bo Dai
 [![Project Page](https://img.shields.io/badge/Project-Website-green)](https://animatediff.github.io/)
 [![Open in OpenXLab](https://cdn-static.openxlab.org.cn/app-center/openxlab_app.svg)](https://openxlab.org.cn/apps/detail/Masbfca/AnimateDiff)
 [![Hugging Face Spaces](https://img.shields.io/badge/%F0%9F%A4%97%20Hugging%20Face-Spaces-yellow)](https://huggingface.co/spaces/guoyww/AnimateDiff)
+[![Replicate](https://replicate.com/zsxkib/animate-diff/badge)](https://replicate.com/zsxkib/animate-diff)
 
 
 ## Features
@@ -43,8 +44,8 @@ Bo Dai
       <td style="border: none"><img src="__assets__/animations/motion_lora/model_02/03.gif"></td>
       </tr>
       <tr style="line-height: 0">
-      <td colspan="2" style="border: none; text-align: center">Pan Up</td>
-      <td colspan="2" style="border: none; text-align: center">Pan Down</td>
+      <td colspan="2" style="border: none; text-align: center">Tilt Up</td>
+      <td colspan="2" style="border: none; text-align: center">Tilt Down</td>
       <td colspan="2" style="border: none; text-align: center">Rolling Anti-Clockwise</td>
       <td colspan="2" style="border: none; text-align: center">Rolling Clockwise</td>
       </tr>
