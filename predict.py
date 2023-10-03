@@ -47,7 +47,6 @@ Cog:
   motion_module:
     - "{motion_module}"
   {motion_module_lora_configs_section}
-  dreambooth_path: "{dreambooth_path}"
   lora_model_path: "{lora_model_path}"
   seed:           {seed}
   steps:          {steps}
@@ -67,8 +66,15 @@ MOTION_MODULE_LORA_CONFIG_TEMPLATE = """
 class Predictor(BasePredictor):
     def setup(self) -> None:
         """Load the model into memory to make running multiple predictions efficient"""
+
+        self.real = os.path.exists("/src/weights")
+
+        if not self.real:
+            print("This is a template model - add diffusers weights to /src/weights")
+            return
         self.inference_config_path = "configs/inference/inference-v2.yaml"
         self.pretrained_model_path = "models/StableDiffusion/stable-diffusion-v1-5"
+        self.pretrained_model_path = "/src/weights"
 
         self.inference_config = OmegaConf.load(self.inference_config_path)
 
@@ -144,7 +150,7 @@ class Predictor(BasePredictor):
                         motion_module_path=motion_module,
                         motion_module_lora_configs=model_config.get("motion_module_lora_configs", []),
                         # image layers
-                        dreambooth_model_path=model_config.get("dreambooth_path", ""),
+                        # dreambooth_model_path=model_config.get("dreambooth_path", ""),
                         lora_model_path=model_config.get("lora_model_path", ""),
                         lora_alpha=model_config.get("lora_alpha", 0.8),
                     ).to("cuda")
@@ -263,17 +269,6 @@ class Predictor(BasePredictor):
         negative_prompt: str = Input(
             default="blur, haze, deformed iris, deformed pupils, semi-realistic, cgi, 3d, render, sketch, cartoon, drawing, anime, mutated hands and fingers, deformed, distorted, disfigured, poorly drawn, bad anatomy, wrong anatomy, extra limb, missing limb, floating limbs, disconnected limbs, mutation, mutated, ugly, disgusting, amputation",
         ),
-        base_model: str = Input(
-            description="Select a base model (DreamBooth checkpoint)",
-            default="realisticVisionV20_v20",
-            choices=[
-                "realisticVisionV20_v20",
-                "lyriel_v16",
-                "majicmixRealistic_v5Preview",
-                "rcnzCartoon3d_v10",
-                "toonyou_beta3",
-            ],
-        ),
         steps: int = Input(
             description="Number of inference steps",
             ge=1,
@@ -353,6 +348,9 @@ class Predictor(BasePredictor):
             le=1.0,
         ),
     ) -> List[CogPath]:
+        if not self.real:
+            raise Exception("This is a template model, for use in dreambooth")
+
         (
             zoom_in_motion_strength,
             zoom_out_motion_strength,
@@ -390,7 +388,7 @@ class Predictor(BasePredictor):
         pretrained_model_path = self.pretrained_model_path
         inference_config_path = self.inference_config_path
         motion_module = f"models/Motion_Module/{motion_module_type}.ckpt"
-        dreambooth_path = f"models/DreamBooth_LoRA/{base_model}.safetensors"
+        # dreambooth_path = f"/src/weights"
         motion_strengths = {
             "ZoomIn": zoom_in_motion_strength,
             "ZoomOut": zoom_out_motion_strength,
@@ -418,7 +416,7 @@ class Predictor(BasePredictor):
             inference_config=inference_config_path,
             motion_module=motion_module,
             motion_module_lora_configs_section=motion_module_lora_configs_section,
-            dreambooth_path=dreambooth_path,
+            # dreambooth_path=dreambooth_path,
             lora_model_path=lora_model_path,
             seed=seed,
             steps=steps,
